@@ -14,13 +14,17 @@
 # this program. If not, see <https://www.gnu.org/licenses/>.
 
 
-set(SUDOKUPP_HPP)
+set(
+    SUDOKUPP_HPP
+    sudoku/sudoku_grid.hpp
+)
 
 set(SUDOKUPP_IPP)
 
 set(
     SUDOKUPP_CPP
     main.cpp
+    sudoku/sudoku_grid.cpp
 )
 
 set(CMAKE_AUTOMOC ON)
