@@ -17,12 +17,14 @@
 set(
     SUDOKUPP_HPP
     sudoku/column_iterator.hpp
+    sudoku/square_iterator.hpp
     sudoku/sudoku_grid.hpp
 )
 
 set(
     SUDOKUPP_IPP
     sudoku/column_iterator.ipp
+    sudoku/square_iterator.ipp
 )
 
 set(

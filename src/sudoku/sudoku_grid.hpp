@@ -20,6 +20,7 @@
 #define SUDOKUPP_SUDOKU_SUDOKU_GRID_HPP
 
 #include "sudoku/column_iterator.hpp"
+#include "sudoku/square_iterator.hpp"
 
 #include <array>
 #include <string>
@@ -41,6 +42,10 @@ namespace sudoku
 
         using row_iterator       = row_type::iterator;
         using const_row_iterator = row_type::const_iterator;
+        using square_iterator    = __square_iterator<row_type::iterator>;
+
+        using const_square_iterator =
+            __square_iterator<row_type::const_iterator>;
     public:
         inline static std::string m_kstrgrid =
             "+~~~+~~~+~~~+~~~+~~~+~~~+~~~+~~~+~~~+\n"
@@ -82,6 +87,13 @@ namespace sudoku
         row_iterator get_row_end(const size_type);
         const_row_iterator get_row_begin(const size_type) const;
         const_row_iterator get_row_end(const size_type) const;
+
+        const_square_iterator get_square_cbegin(const size_type) const;
+        const_square_iterator get_square_cend(const size_type) const;
+        square_iterator get_square_begin(const size_type);
+        square_iterator get_square_end(const size_type);
+        const_square_iterator get_square_begin(const size_type) const;
+        const_square_iterator get_square_end(const size_type) const;
     public:
         void solve();
     public:

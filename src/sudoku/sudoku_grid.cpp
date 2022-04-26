@@ -64,7 +64,7 @@ namespace sudoku
         const size_type __n
     ) const
     {
-        return m_grid.cbegin()->cbegin() + (__n % 9);
+        return m_grid.front().cbegin() + (__n % 9);
     }
 
     sudoku_grid::const_column_iterator sudoku_grid::get_column_cend(
@@ -78,7 +78,7 @@ namespace sudoku
         const size_type __n
     )
     {
-        return m_grid.begin()->begin() + (__n % 9);
+        return m_grid.front().begin() + (__n % 9);
     }
 
     sudoku_grid::column_iterator sudoku_grid::get_column_end(
@@ -106,28 +106,28 @@ namespace sudoku
         const size_type __n
     ) const
     {
-        return m_grid.cbegin()[__n % 9].cbegin();
+        return m_grid[__n % 9].cbegin();
     }
 
     sudoku_grid::const_row_iterator sudoku_grid::get_row_cend(
         const size_type __n
     ) const
     {
-        return m_grid.cbegin()[__n % 9].cend();
+        return m_grid[__n % 9].cend();
     }
 
     sudoku_grid::row_iterator sudoku_grid::get_row_begin(
         const size_type __n
     )
     {
-        return m_grid.begin()[__n % 9].begin();
+        return m_grid[__n % 9].begin();
     }
 
     sudoku_grid::row_iterator sudoku_grid::get_row_end(
         const size_type __n
     )
     {
-        return m_grid.begin()[__n % 9].end();
+        return m_grid[__n % 9].end();
     }
 
     sudoku_grid::const_row_iterator sudoku_grid::get_row_begin(
@@ -142,6 +142,58 @@ namespace sudoku
     ) const
     {
         return get_row_cend(__n);
+    }
+
+    sudoku_grid::const_square_iterator sudoku_grid::get_square_cbegin(
+        const size_type __n
+    ) const
+    {
+        return m_grid[(__n / 27) * 3].cbegin() + ((__n % 9) / 3) * 3;
+    }
+
+    sudoku_grid::const_square_iterator sudoku_grid::get_square_cend(
+        const size_type __n
+    ) const
+    {
+        const_square_iterator ret =
+            m_grid[(__n / 27) * 3 + 2].cbegin() + (((__n % 9) / 3) * 3) + 9;
+
+        ret.m_counter = 9;
+
+        return ret;
+    }
+
+    sudoku_grid::square_iterator sudoku_grid::get_square_begin(
+        const size_type __n
+    )
+    {
+        return m_grid[(__n / 27) * 3].begin() + ((__n % 9) / 3) * 3;
+    }
+
+    sudoku_grid::square_iterator sudoku_grid::get_square_end(
+        const size_type __n
+    )
+    {
+        square_iterator ret =
+            m_grid[(__n / 27) * 3 + 2].begin() + (((__n % 9) / 3) * 3) + 9;
+
+        ret.m_counter = 9;
+
+        return ret;
+    }
+
+    sudoku_grid::const_square_iterator sudoku_grid::get_square_begin(
+        const size_type __n
+    ) const
+    {
+        return get_square_cbegin(__n);
+    }
+
+    sudoku_grid::const_square_iterator sudoku_grid::get_square_end(
+        const size_type __n
+    ) const
+    {
+        return get_square_cend(__n);
     }
 
     bool sudoku_grid::is_empty() const

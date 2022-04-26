@@ -23,8 +23,8 @@ namespace sudoku
      ******************************/
 
     template <class _InnerIterator>
-    typename __column_iterator<_InnerIterator>::reference
-    __column_iterator<_InnerIterator>::operator[](
+    typename __square_iterator<_InnerIterator>::reference
+    __square_iterator<_InnerIterator>::operator[](
         const difference_type __n
     ) const
     {
@@ -32,17 +32,21 @@ namespace sudoku
     }
 
     template <class _InnerIterator>
-    __column_iterator<_InnerIterator>&
-    __column_iterator<_InnerIterator>::operator--()
+    __square_iterator<_InnerIterator>&
+    __square_iterator<_InnerIterator>::operator--()
     {
-        m_i -= 9;
+        if ((m_counter-- % 3) == 0) {
+            m_i -= 7;
+        } else {
+            --m_i;
+        }
 
         return *this;
     }
 
     template <class _InnerIterator>
-    __column_iterator<_InnerIterator>
-    __column_iterator<_InnerIterator>::operator--(int)
+    __square_iterator<_InnerIterator>
+    __square_iterator<_InnerIterator>::operator--(int)
     {
         auto tmp = *this;
         --(*this);
@@ -51,17 +55,21 @@ namespace sudoku
     }
 
     template <class _InnerIterator>
-    __column_iterator<_InnerIterator>&
-    __column_iterator<_InnerIterator>::operator++()
+    __square_iterator<_InnerIterator>&
+    __square_iterator<_InnerIterator>::operator++()
     {
-        m_i += 9;
+        if ((++m_counter % 3) == 0) {
+            m_i += 7;
+        } else {
+            ++m_i;
+        }
 
         return *this;
     }
 
     template <class _InnerIterator>
-    __column_iterator<_InnerIterator>
-    __column_iterator<_InnerIterator>::operator++(int)
+    __square_iterator<_InnerIterator>
+    __square_iterator<_InnerIterator>::operator++(int)
     {
         auto tmp = *this;
         ++(*this);
@@ -69,20 +77,28 @@ namespace sudoku
         return tmp;
     }
 
+    // TODO: add comments
     template <class _InnerIterator>
-    __column_iterator<_InnerIterator>&
-    __column_iterator<_InnerIterator>::operator+=(
+    __square_iterator<_InnerIterator>&
+    __square_iterator<_InnerIterator>::operator+=(
         const difference_type __n
     )
     {
-        m_i += 9 * __n;
+        auto column_index = m_counter % 3;
+
+        if (__n < 0) {
+            column_index -= 2;
+        }
+
+        m_counter += __n;
+        m_i       += __n + ((column_index + __n) / 3) * 6;
 
         return *this;
     }
 
     template <class _InnerIterator>
-    __column_iterator<_InnerIterator>&
-    __column_iterator<_InnerIterator>::operator-=(
+    __square_iterator<_InnerIterator>&
+    __square_iterator<_InnerIterator>::operator-=(
         const difference_type __n
     )
     {
@@ -95,8 +111,8 @@ namespace sudoku
 
     template <class _InnerIterator>
     bool operator==(
-        const __column_iterator<_InnerIterator> __l,
-        const __column_iterator<_InnerIterator> __r
+        const __square_iterator<_InnerIterator> __l,
+        const __square_iterator<_InnerIterator> __r
     )
     {
         return __l.m_i == __r.m_i;
@@ -104,8 +120,8 @@ namespace sudoku
 
     template <class _InnerIterator>
     bool operator!=(
-        const __column_iterator<_InnerIterator> __l,
-        const __column_iterator<_InnerIterator> __r
+        const __square_iterator<_InnerIterator> __l,
+        const __square_iterator<_InnerIterator> __r
     )
     {
         return __l.m_i != __r.m_i;
@@ -113,8 +129,8 @@ namespace sudoku
 
     template <class _InnerIterator>
     bool operator<(
-        const __column_iterator<_InnerIterator> __l,
-        const __column_iterator<_InnerIterator> __r
+        const __square_iterator<_InnerIterator> __l,
+        const __square_iterator<_InnerIterator> __r
     )
     {
         return __l.m_i < __r.m_i;
@@ -122,8 +138,8 @@ namespace sudoku
 
     template <class _InnerIterator>
     bool operator>(
-        const __column_iterator<_InnerIterator> __l,
-        const __column_iterator<_InnerIterator> __r
+        const __square_iterator<_InnerIterator> __l,
+        const __square_iterator<_InnerIterator> __r
     )
     {
         return __l.m_i > __r.m_i;
@@ -131,8 +147,8 @@ namespace sudoku
 
     template <class _InnerIterator>
     bool operator<=(
-        const __column_iterator<_InnerIterator> __l,
-        const __column_iterator<_InnerIterator> __r
+        const __square_iterator<_InnerIterator> __l,
+        const __square_iterator<_InnerIterator> __r
     )
     {
         return __l.m_i <= __r.m_i;
@@ -140,37 +156,41 @@ namespace sudoku
 
     template <class _InnerIterator>
     bool operator>=(
-        const __column_iterator<_InnerIterator> __l,
-        const __column_iterator<_InnerIterator> __r
+        const __square_iterator<_InnerIterator> __l,
+        const __square_iterator<_InnerIterator> __r
     )
     {
         return __l.m_i >= __r.m_i;
     }
 
     template <class _InnerIterator>
-    __column_iterator<_InnerIterator> operator-(
-        __column_iterator<_InnerIterator> __l,
-        const typename __column_iterator<_InnerIterator>::difference_type __n
+    __square_iterator<_InnerIterator> operator-(
+        __square_iterator<_InnerIterator> __l,
+        const typename __square_iterator<_InnerIterator>::difference_type __n
     )
+
     {
         return __l -= __n;
     }
 
     template <class _InnerIterator>
-    __column_iterator<_InnerIterator> operator+(
-        __column_iterator<_InnerIterator> __l,
-        const typename __column_iterator<_InnerIterator>::difference_type __n
+    __square_iterator<_InnerIterator> operator+(
+        __square_iterator<_InnerIterator> __l,
+        const typename __square_iterator<_InnerIterator>::difference_type __n
     )
+
     {
         return __l += __n;
     }
 
     template <class _InnerIterator>
-    typename __column_iterator<_InnerIterator>::difference_type operator-(
-        const __column_iterator<_InnerIterator> __l,
-        const __column_iterator<_InnerIterator> __r
+    typename __square_iterator<_InnerIterator>::difference_type operator-(
+        const __square_iterator<_InnerIterator> __l,
+        const __square_iterator<_InnerIterator> __r
     )
     {
-        return (__l.m_i - __r.m_i) / 9;
+        const auto n = __l.m_i - __r.m_i;
+
+        return n - 6 * (n / 9);
     }
 }

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2022 Mattéo Rossillol‑‑Laruelle <beatussum@protonmail.com>
  *
  * This program is free software:  you can redistribute it and/or modify
@@ -16,60 +16,60 @@
  */
 
 
-#ifndef SUDOKUPP_SUDOKU_COLUMN_ITERATOR_HPP
-#define SUDOKUPP_SUDOKU_COLUMN_ITERATOR_HPP
+#ifndef SUDOKUPP_SUDOKU_SQUARE_ITERATOR_HPP
+#define SUDOKUPP_SUDOKU_SQUARE_ITERATOR_HPP
 
 #include <iterator>
 
 namespace sudoku
 {
     template <class _InnerIterator>
-    class __column_iterator;
+    class __square_iterator;
 
     template <class _InnerIterator>
     bool operator==(
-        const __column_iterator<_InnerIterator>,
-        const __column_iterator<_InnerIterator>
+        const __square_iterator<_InnerIterator>,
+        const __square_iterator<_InnerIterator>
     );
 
     template <class _InnerIterator>
     bool operator!=(
-        const __column_iterator<_InnerIterator>,
-        const __column_iterator<_InnerIterator>
+        const __square_iterator<_InnerIterator>,
+        const __square_iterator<_InnerIterator>
     );
 
     template <class _InnerIterator>
     bool operator<(
-        const __column_iterator<_InnerIterator>,
-        const __column_iterator<_InnerIterator>
+        const __square_iterator<_InnerIterator>,
+        const __square_iterator<_InnerIterator>
     );
 
     template <class _InnerIterator>
     bool operator>(
-        const __column_iterator<_InnerIterator>,
-        const __column_iterator<_InnerIterator>
+        const __square_iterator<_InnerIterator>,
+        const __square_iterator<_InnerIterator>
     );
 
     template <class _InnerIterator>
     bool operator<=(
-        const __column_iterator<_InnerIterator>,
-        const __column_iterator<_InnerIterator>
+        const __square_iterator<_InnerIterator>,
+        const __square_iterator<_InnerIterator>
     );
 
     template <class _InnerIterator>
     bool operator>=(
-        const __column_iterator<_InnerIterator>,
-        const __column_iterator<_InnerIterator>
+        const __square_iterator<_InnerIterator>,
+        const __square_iterator<_InnerIterator>
     );
 
     template <class _InnerIterator>
-    typename __column_iterator<_InnerIterator>::difference_type operator-(
-        const __column_iterator<_InnerIterator>,
-        const __column_iterator<_InnerIterator>
+    typename __square_iterator<_InnerIterator>::difference_type operator-(
+        const __square_iterator<_InnerIterator>,
+        const __square_iterator<_InnerIterator>
     );
 
     template <class _InnerIterator>
-    class __column_iterator final
+    class __square_iterator final
     {
     public:
         using iterator_type = _InnerIterator;
@@ -91,77 +91,83 @@ namespace sudoku
         using value_type =
             typename std::iterator_traits<iterator_type>::value_type;
     public:
+        friend class sudoku_grid;
+
         friend bool operator== <>(
-            const __column_iterator,
-            const __column_iterator
+            const __square_iterator,
+            const __square_iterator
         );
 
         friend bool operator!= <>(
-            const __column_iterator,
-            const __column_iterator
+            const __square_iterator,
+            const __square_iterator
         );
 
         friend bool operator< <>(
-            const __column_iterator,
-            const __column_iterator
+            const __square_iterator,
+            const __square_iterator
         );
 
         friend bool operator> <>(
-            const __column_iterator,
-            const __column_iterator
+            const __square_iterator,
+            const __square_iterator
         );
 
         friend bool operator<= <>(
-            const __column_iterator,
-            const __column_iterator
+            const __square_iterator,
+            const __square_iterator
         );
 
         friend bool operator>= <>(
-            const __column_iterator,
-            const __column_iterator
+            const __square_iterator,
+            const __square_iterator
         );
 
         friend difference_type operator- <>(
-            const __column_iterator,
-            const __column_iterator
+            const __square_iterator,
+            const __square_iterator
         );
     public:
-        __column_iterator() = default;
+        __square_iterator()
+            : m_i()
+            , m_counter(0)
+        {}
 
-        __column_iterator(_InnerIterator __i)
+        __square_iterator(_InnerIterator __i)
             : m_i(std::move(__i))
+            , m_counter(0)
         {}
     public:
         reference operator*() const { return *m_i; }
-        reference operator[](const difference_type __n) const;
+        reference operator[](const difference_type) const;
 
-        __column_iterator& operator--();
-        __column_iterator operator--(int);
-        __column_iterator& operator++();
-        __column_iterator operator++(int);
+        __square_iterator& operator--();
+        __square_iterator operator--(int);
+        __square_iterator& operator++();
+        __square_iterator operator++(int);
 
-        __column_iterator& operator+=(const difference_type);
-        __column_iterator& operator-=(const difference_type);
+        __square_iterator& operator+=(const difference_type);
+        __square_iterator& operator-=(const difference_type);
 
         pointer operator->() const { return m_i.operator->(); }
     private:
         iterator_type m_i;
+        difference_type m_counter;
     };
 
     template <class _InnerIterator>
-    __column_iterator<_InnerIterator> operator-(
-        __column_iterator<_InnerIterator>,
-        const typename __column_iterator<_InnerIterator>::difference_type
+    __square_iterator<_InnerIterator> operator-(
+        __square_iterator<_InnerIterator>,
+        const typename __square_iterator<_InnerIterator>::difference_type
     );
 
     template <class _InnerIterator>
-    __column_iterator<_InnerIterator> operator+(
-        __column_iterator<_InnerIterator>,
-        const typename __column_iterator<_InnerIterator>::difference_type
+    __square_iterator<_InnerIterator> operator+(
+        __square_iterator<_InnerIterator>,
+        const typename __square_iterator<_InnerIterator>::difference_type
     );
 }
 
-#include "sudoku/column_iterator.ipp"
+#include "sudoku/square_iterator.ipp"
 
-#endif // SUDOKUPP_SUDOKU_COLUMN_ITERATOR_HPP
-
+#endif // SUDOKUPP_SUDOKU_SQUARE_ITERATOR_HPP
