@@ -19,6 +19,8 @@
 #ifndef SUDOKUPP_SUDOKU_SUDOKU_GRID_HPP
 #define SUDOKUPP_SUDOKU_SUDOKU_GRID_HPP
 
+#include "sudoku/column_iterator.hpp"
+
 #include <array>
 #include <string>
 
@@ -27,10 +29,18 @@ namespace sudoku
     class sudoku_grid final
     {
     public:
-        using case_type = std::uint8_t;
-        using line_type = std::array<case_type, 9>;
+        using cell_type = std::uint8_t;
+        using row_type  = std::array<cell_type, 9>;
+        using size_type = row_type::size_type;
 
-        using grid_type = std::array<line_type, 9>;
+        using grid_type       = std::array<row_type, 9>;
+        using column_iterator = __column_iterator<row_type::iterator>;
+
+        using const_column_iterator =
+            __column_iterator<row_type::const_iterator>;
+
+        using row_iterator       = row_type::iterator;
+        using const_row_iterator = row_type::const_iterator;
     public:
         inline static std::string m_kstrgrid =
             "+~~~+~~~+~~~+~~~+~~~+~~~+~~~+~~~+~~~+\n"
@@ -57,10 +67,24 @@ namespace sudoku
 
         explicit operator std::string() const;
     public:
-        bool is_empty() const noexcept;
+        bool is_empty() const;
+
+        const_column_iterator get_column_cbegin(const size_type) const;
+        const_column_iterator get_column_cend(const size_type) const;
+        column_iterator get_column_begin(const size_type);
+        column_iterator get_column_end(const size_type);
+        const_column_iterator get_column_begin(const size_type) const;
+        const_column_iterator get_column_end(const size_type) const;
+
+        const_row_iterator get_row_cbegin(const size_type) const;
+        const_row_iterator get_row_cend(const size_type) const;
+        row_iterator get_row_begin(const size_type);
+        row_iterator get_row_end(const size_type);
+        const_row_iterator get_row_begin(const size_type) const;
+        const_row_iterator get_row_end(const size_type) const;
     public:
         void solve();
-    private:
+    public:
         grid_type m_grid;
     };
 }
