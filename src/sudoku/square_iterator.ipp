@@ -183,6 +183,7 @@ namespace sudoku
         return __l += __n;
     }
 
+    // TODO: fix
     template <class _InnerIterator>
     typename __square_iterator<_InnerIterator>::difference_type operator-(
         const __square_iterator<_InnerIterator> __l,

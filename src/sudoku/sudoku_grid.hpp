@@ -23,6 +23,8 @@
 #include "sudoku/square_iterator.hpp"
 
 #include <array>
+#include <vector>
+
 #include <string>
 
 namespace sudoku
@@ -34,20 +36,16 @@ namespace sudoku
         using row_type  = std::array<cell_type, 9>;
         using size_type = row_type::size_type;
 
-        using grid_type       = std::array<row_type, 9>;
-        using column_iterator = __column_iterator<row_type::iterator>;
+        using grid_type             = std::array<row_type, 9>;
 
-        using const_column_iterator =
-            __column_iterator<row_type::const_iterator>;
-
-        using row_iterator       = row_type::iterator;
-        using const_row_iterator = row_type::const_iterator;
-        using square_iterator    = __square_iterator<row_type::iterator>;
-
-        using const_square_iterator =
-            __square_iterator<row_type::const_iterator>;
+        using row_iterator          = row_type::iterator;
+        using const_row_iterator    = row_type::const_iterator;
+        using column_iterator       = __column_iterator<row_iterator>;
+        using const_column_iterator = __column_iterator<const_row_iterator>;
+        using square_iterator       = __square_iterator<row_iterator>;
+        using const_square_iterator = __square_iterator<const_row_iterator>;
     public:
-        inline static std::string m_kstrgrid =
+        inline static std::string m_strgrid =
             "+~~~+~~~+~~~+~~~+~~~+~~~+~~~+~~~+~~~+\n"
             "I 0 | 0 | 0 I 0 | 0 | 0 I 0 | 0 | 0 I\n"
             "+---+---+---+---+---+---+---+---+---+\n"
@@ -72,8 +70,13 @@ namespace sudoku
 
         explicit operator std::string() const;
     public:
-        bool is_empty() const;
+        bool is_in_column(const cell_type, const size_type) const;
+        bool is_in_row(const cell_type, const size_type) const;
+        bool is_in_square(const cell_type, const size_type) const;
 
+        bool is_empty() const;
+        bool is_valid() const;
+    public:
         const_column_iterator get_column_cbegin(const size_type) const;
         const_column_iterator get_column_cend(const size_type) const;
         column_iterator get_column_begin(const size_type);
@@ -94,6 +97,32 @@ namespace sudoku
         square_iterator get_square_end(const size_type);
         const_square_iterator get_square_begin(const size_type) const;
         const_square_iterator get_square_end(const size_type) const;
+
+        const_column_iterator get_column_cbegin(const const_row_iterator) const;
+        const_column_iterator get_column_cend(const const_row_iterator) const;
+        column_iterator get_column_begin(const const_row_iterator);
+        column_iterator get_column_end(const const_row_iterator);
+        const_column_iterator get_column_begin(const const_row_iterator) const;
+        const_column_iterator get_column_end(const const_row_iterator) const;
+
+        const_row_iterator get_row_cbegin(const const_row_iterator) const;
+        const_row_iterator get_row_cend(const const_row_iterator) const;
+        row_iterator get_row_begin(const const_row_iterator);
+        row_iterator get_row_end(const const_row_iterator);
+        const_row_iterator get_row_begin(const const_row_iterator) const;
+        const_row_iterator get_row_end(const const_row_iterator) const;
+
+        const_square_iterator get_square_cbegin(const const_row_iterator) const;
+        const_square_iterator get_square_cend(const const_row_iterator) const;
+        square_iterator get_square_begin(const const_row_iterator);
+        square_iterator get_square_end(const const_row_iterator);
+        const_square_iterator get_square_begin(const const_row_iterator) const;
+        const_square_iterator get_square_end(const const_row_iterator) const;
+    public:
+        std::vector<row_iterator> get_empty_cells();
+        std::vector<const_row_iterator> get_empty_cells() const;
+
+        std::uint8_t get_number_of_empty_cells() const;
     public:
         void solve();
     public:

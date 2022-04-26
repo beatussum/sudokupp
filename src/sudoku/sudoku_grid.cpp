@@ -19,6 +19,7 @@
 #include "sudoku/sudoku_grid.hpp"
 #include "sudoku/column_iterator.hpp"
 
+#include <algorithm>
 #include <stdexcept>
 
 namespace sudoku
@@ -44,7 +45,7 @@ namespace sudoku
 
     sudoku_grid::operator std::string() const
     {
-        std::string ret = m_kstrgrid;
+        std::string ret = m_strgrid;
 
         for (std::uint8_t i = 0; i != 9; ++i) {
             for (std::uint8_t j = 0; j != 9; ++j) {
@@ -196,6 +197,180 @@ namespace sudoku
         return get_square_cend(__n);
     }
 
+
+    sudoku_grid::const_column_iterator sudoku_grid::get_column_cbegin(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_column_cbegin(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_column_iterator sudoku_grid::get_column_cend(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_column_cend(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::column_iterator sudoku_grid::get_column_begin(
+        const const_row_iterator __i
+    )
+    {
+        return get_column_begin(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::column_iterator sudoku_grid::get_column_end(
+        const const_row_iterator __i
+    )
+    {
+        return get_column_end(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_column_iterator sudoku_grid::get_column_begin(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_column_begin(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_column_iterator sudoku_grid::get_column_end(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_column_end(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_row_iterator sudoku_grid::get_row_cbegin(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_row_cbegin(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_row_iterator sudoku_grid::get_row_cend(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_row_cend(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::row_iterator sudoku_grid::get_row_begin(
+        const const_row_iterator __i
+    )
+    {
+        return get_row_begin(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::row_iterator sudoku_grid::get_row_end(
+        const const_row_iterator __i)
+    {
+        return get_row_end(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_row_iterator sudoku_grid::get_row_begin(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_row_begin(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_row_iterator sudoku_grid::get_row_end(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_row_end(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_square_iterator sudoku_grid::get_square_cbegin(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_square_cbegin(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_square_iterator sudoku_grid::get_square_cend(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_square_cend(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::square_iterator sudoku_grid::get_square_begin(
+        const const_row_iterator __i
+    )
+    {
+        return get_square_begin(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::square_iterator sudoku_grid::get_square_end(
+        const const_row_iterator __i
+    )
+    {
+        return get_square_end(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_square_iterator sudoku_grid::get_square_begin(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_square_begin(__i - m_grid.front().cbegin());
+    }
+
+    sudoku_grid::const_square_iterator sudoku_grid::get_square_end(
+        const const_row_iterator __i
+    ) const
+    {
+        return get_square_end(__i - m_grid.front().cbegin());
+    }
+
+    bool sudoku_grid::is_in_column(
+        const cell_type __c,
+        const size_type __i
+    ) const
+    {
+        if (__c > 9) {
+            return false;
+        } else {
+            return std::find(
+                get_column_cbegin(__i),
+                get_column_cend(__i),
+                __c
+            ) != get_column_cend(__i);
+        }
+    }
+
+    bool sudoku_grid::is_in_row(
+        const cell_type __c,
+        const size_type __i
+    ) const
+    {
+        if (__c > 9) {
+            return false;
+        } else {
+            return std::find(
+                get_row_cbegin(__i),
+                get_row_cend(__i),
+                __c
+            ) != get_row_cend(__i);
+        }
+    }
+
+    bool sudoku_grid::is_in_square(
+        const cell_type __c,
+        const size_type __i
+    ) const
+    {
+        if (__c > 9) {
+            return false;
+        } else {
+            return std::find(
+                get_square_cbegin(__i),
+                get_square_cend(__i),
+                __c
+            ) != get_square_cend(__i);
+        }
+    }
+
     bool sudoku_grid::is_empty() const
     {
         for (const auto& i : m_grid) {
@@ -207,5 +382,72 @@ namespace sudoku
         }
 
         return true;
+    }
+
+    bool sudoku_grid::is_valid() const
+    {
+        for (cell_type i = 1; i != 10; ++i) {
+            for (size_type k = 0; k != 9; ++k) {
+                if (!is_in_column(i, k)) {
+                    return false;
+                }
+
+                if (!is_in_row(i, k)) {
+                    return false;
+                }
+
+                if (!is_in_square(i, 27 * (k / 3) + 3 * (k % 3))) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    std::vector<sudoku_grid::row_iterator> sudoku_grid::get_empty_cells()
+    {
+        std::vector<row_iterator> ret;
+
+        for (auto& i : m_grid) {
+            for (auto j = i.begin(); j != i.end(); ++j) {
+                if (*j == 0) {
+                    ret.push_back(j);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    std::vector<sudoku_grid::const_row_iterator>
+    sudoku_grid::get_empty_cells() const
+    {
+        std::vector<const_row_iterator> ret;
+
+        for (auto& i : m_grid) {
+            for (auto j = i.cbegin(); j != i.cend(); ++j) {
+                if (*j == 0) {
+                    ret.push_back(j);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    std::uint8_t sudoku_grid::get_number_of_empty_cells() const
+    {
+        std::uint8_t ret = 0;
+
+        for (auto& i : m_grid) {
+            for (auto j : i) {
+                if (j == 0) {
+                    ++ret;
+                }
+            }
+        }
+
+        return ret;
     }
 }
