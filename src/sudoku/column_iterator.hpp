@@ -69,6 +69,49 @@ namespace sudoku
     );
 
     template <class _InnerIterator>
+    __column_iterator<_InnerIterator> operator-(
+        __column_iterator<_InnerIterator>,
+        const typename __column_iterator<_InnerIterator>::difference_type
+    );
+
+    template <class _InnerIterator>
+    __column_iterator<_InnerIterator> operator+(
+        __column_iterator<_InnerIterator>,
+        const typename __column_iterator<_InnerIterator>::difference_type
+    );
+
+    template <class _InnerIterator>
+    void swap(
+        __column_iterator<_InnerIterator>&,
+        __column_iterator<_InnerIterator>&
+    );
+
+    /**
+     * @brief A class allowing iteration over a column composing the grid of a
+     * sudoku.
+     *
+     * This class implements an \em iterator allowing to iterate over a column
+     * composing the grid of a sudoku. It respects the following <em>named
+     * requierements</em>, \p LegacyOutputIterator and
+     * <tt>LegacyRandomAccessIterator</tt>.
+     *
+     * @note This class was designed as a <em>template class</em> in order to
+     * simplify implementation of \p const and \p non-const iterator, and, in
+     * this way, avoid code repetition. Indeed, both are implemented using
+     * <tt>typedef</tt>s.
+     *
+     * @warning As mentioned in the note above, this class should not be
+     * used directly.
+     *
+     * @warning Usage of the following implemented methods on two iterators
+     * referring to two different columns results in undefined behavior.
+     *
+     * @warning This class was not designed to be inheritable.
+     *
+     * @tparam _InnerIterator Type of the iterator of the two-dimensionnal
+     * array used to store the grid of the sudoku.
+     */
+    template <class _InnerIterator>
     class __column_iterator final
     {
     public:
@@ -125,6 +168,8 @@ namespace sudoku
             const __column_iterator,
             const __column_iterator
         );
+
+        friend void swap<>(__column_iterator&, __column_iterator&);
     public:
         __column_iterator() = default;
 
@@ -147,18 +192,6 @@ namespace sudoku
     private:
         iterator_type m_i;
     };
-
-    template <class _InnerIterator>
-    __column_iterator<_InnerIterator> operator-(
-        __column_iterator<_InnerIterator>,
-        const typename __column_iterator<_InnerIterator>::difference_type
-    );
-
-    template <class _InnerIterator>
-    __column_iterator<_InnerIterator> operator+(
-        __column_iterator<_InnerIterator>,
-        const typename __column_iterator<_InnerIterator>::difference_type
-    );
 }
 
 #include "sudoku/column_iterator.ipp"

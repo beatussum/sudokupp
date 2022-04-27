@@ -36,7 +36,7 @@ namespace sudoku
         using row_type  = std::array<cell_type, 9>;
         using size_type = row_type::size_type;
 
-        using grid_type             = std::array<row_type, 9>;
+        using grid_type = std::array<row_type, 9>;
 
         using row_iterator          = row_type::iterator;
         using const_row_iterator    = row_type::const_iterator;

@@ -23,6 +23,10 @@
 
 namespace sudoku
 {
+    /************************
+     * FORWARD DECLARATIONS *
+     ************************/
+
     template <class _InnerIterator>
     class __square_iterator;
 
@@ -69,6 +73,58 @@ namespace sudoku
     );
 
     template <class _InnerIterator>
+    __square_iterator<_InnerIterator> operator-(
+        __square_iterator<_InnerIterator>,
+        const typename __square_iterator<_InnerIterator>::difference_type
+    );
+
+    template <class _InnerIterator>
+    __square_iterator<_InnerIterator> operator+(
+        __square_iterator<_InnerIterator>,
+        const typename __square_iterator<_InnerIterator>::difference_type
+    );
+
+    template <class _InnerIterator>
+    void swap(
+        __square_iterator<_InnerIterator>&,
+        __square_iterator<_InnerIterator>&
+    );
+
+    /*********************
+     * CLASS DECLARATION *
+     *********************/
+
+    /**
+     * @brief A class allowing iteration over a square composing the grid of a
+     * sudoku.
+     *
+     * This class implements an \em iterator allowing to iterate over a square
+     * composing the grid of a sudoku. It respects the following <em>named
+     * requierements</em>, \p LegacyOutputIterator and
+     * <tt>LegacyRandomAccessIterator</tt>.
+     *
+     * This iterator works by using an iterator of the two-dimensionnal array
+     * used to store the grid of the sudoku (\p m_i), and a counter variable
+     * (\p m_counter). This counter allows to know if the next iterator is the
+     * one in the next column, in the grid, or in the next row.
+     *
+     * @note This class was designed as a <em>template class</em> in order to
+     * simplify implementation of \p const and \p non-const iterator, and, in
+     * this way, avoid code repetition. Indeed, both are implemented using
+     * <tt>typedef</tt>s.
+     *
+     * @warning As mentioned in the note above, this class should not be
+     * used directly.
+     *
+     * @warning Usage of the following implemented methods on two iterators
+     * referring to two different columns results in undefined behavior.
+     *
+     * @warning This class was not designed to be inheritable.
+     *
+     * @tparam _InnerIterator Type of the iterator of the two-dimensionnal
+     * array used to store the grid of the sudoku.
+     */
+    template <class _InnerIterator>
     class __square_iterator final
     {
     public:
@@ -91,6 +147,8 @@ namespace sudoku
         using value_type =
             typename std::iterator_traits<iterator_type>::value_type;
     public:
+        // Necessary in order to set the suitable `m_counter` for method
+        // returning a "past-the-end iterators".
         friend class sudoku_grid;
 
         friend bool operator== <>(
@@ -127,6 +185,8 @@ namespace sudoku
             const __square_iterator,
             const __square_iterator
         );
+
+        friend void swap<>(__square_iterator&, __square_iterator&);
     public:
         __square_iterator()
             : m_i()
@@ -154,18 +214,6 @@ namespace sudoku
         iterator_type m_i;
         difference_type m_counter;
     };
-
-    template <class _InnerIterator>
-    __square_iterator<_InnerIterator> operator-(
-        __square_iterator<_InnerIterator>,
-        const typename __square_iterator<_InnerIterator>::difference_type
-    );
-
-    template <class _InnerIterator>
-    __square_iterator<_InnerIterator> operator+(
-        __square_iterator<_InnerIterator>,
-        const typename __square_iterator<_InnerIterator>::difference_type
-    );
 }
 
 #include "sudoku/square_iterator.ipp"

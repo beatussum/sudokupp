@@ -18,9 +18,9 @@
 
 namespace sudoku
 {
-    /******************************
-     * CONSTRUCTORS AND OPERATORS *
-     ******************************/
+    /***************************
+     * MEMBER ACCESS OPERATORS *
+     ***************************/
 
     template <class _InnerIterator>
     typename __column_iterator<_InnerIterator>::reference
@@ -30,6 +30,10 @@ namespace sudoku
     {
         return *(*this + __n);
     }
+
+    /*************************************
+     * INCREMENT AND DECREMENT OPERATORS *
+     *************************************/
 
     template <class _InnerIterator>
     __column_iterator<_InnerIterator>&
@@ -69,6 +73,10 @@ namespace sudoku
         return tmp;
     }
 
+    /************************
+     * ASSIGNMENT OPERATORS *
+     ************************/
+
     template <class _InnerIterator>
     __column_iterator<_InnerIterator>&
     __column_iterator<_InnerIterator>::operator+=(
@@ -89,9 +97,9 @@ namespace sudoku
         return *this += -__n;
     }
 
-    /***********
-     * FRIENDS *
-     **********/
+    /************************
+     * COMPARISON OPERATORS *
+     ************************/
 
     template <class _InnerIterator>
     bool operator==(
@@ -147,6 +155,10 @@ namespace sudoku
         return __l.m_i >= __r.m_i;
     }
 
+    /*******************************************
+     * INCREMENT AND DECREMENT OPERATORS (bis) *
+     *******************************************/
+
     template <class _InnerIterator>
     __column_iterator<_InnerIterator> operator-(
         __column_iterator<_InnerIterator> __l,
@@ -165,6 +177,10 @@ namespace sudoku
         return __l += __n;
     }
 
+    /*********
+     * OTHER *
+     *********/
+
     template <class _InnerIterator>
     typename __column_iterator<_InnerIterator>::difference_type operator-(
         const __column_iterator<_InnerIterator> __l,
@@ -172,5 +188,16 @@ namespace sudoku
     )
     {
         return (__l.m_i - __r.m_i) / 9;
+    }
+
+    template <class _InnerIterator>
+    void swap(
+        __column_iterator<_InnerIterator>& __l,
+        __column_iterator<_InnerIterator>& __r
+    )
+    {
+        using std::swap;
+
+        swap(__l.m_i, __r.m_i);
     }
 }
