@@ -21,6 +21,18 @@
 
 namespace sudoku
 {
+    /**
+     * @brief A class used as \p Compare type in the optimised algorithm.
+     *
+     * This class allows to optimise the algorithm used to solve the sudoku
+     * grid. Indeed, it sorts the container containing the <em>selected
+     * cells</em> by increasing order of possibilities.
+     *
+     * This class respects the <em>named requierement</em> <tt>Compare</tt>.
+     *
+     * @warning This class was not designed to be used elsewhere.
+     *
+     */
     class selected_cells_comparator final
     {
     public:

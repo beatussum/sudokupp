@@ -510,6 +510,8 @@ namespace sudoku
 
                 ++i;
             } else {
+                // As `allowed_it` does not affect the order of the
+                // `std::multiset`, it is safe to change its value.
                 if (++solver_const_cast(allowed_it) == allowed_end) {
                     if (i == selected_cells.begin()) {
                         throw std::runtime_error(
