@@ -25,6 +25,7 @@ set(
     SUDOKUPP_IPP
     sudoku/column_iterator.ipp
     sudoku/square_iterator.ipp
+    sudoku/sudoku_grid.ipp
 )
 
 set(

@@ -68,14 +68,20 @@ namespace sudoku
     public:
         explicit sudoku_grid(grid_type);
 
+        explicit operator bool() const { return is_finished(); }
         explicit operator std::string() const;
     public:
-        bool is_in_column(const cell_type, const size_type) const;
-        bool is_in_row(const cell_type, const size_type) const;
-        bool is_in_square(const cell_type, const size_type) const;
+        template <class _T>
+        bool is_in_column(const cell_type, const _T) const;
+
+        template <class _T>
+        bool is_in_row(const cell_type, const _T) const;
+
+        template <class _T>
+        bool is_in_square(const cell_type, const _T) const;
 
         bool is_empty() const;
-        bool is_valid() const;
+        bool is_finished() const;
     public:
         const_column_iterator get_column_cbegin(const size_type) const;
         const_column_iterator get_column_cend(const size_type) const;
@@ -129,5 +135,7 @@ namespace sudoku
         grid_type m_grid;
     };
 }
+
+#include "sudoku/sudoku_grid.ipp"
 
 #endif // SUDOKUPP_SUDOKU_SUDOKU_GRID_HPP

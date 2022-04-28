@@ -19,8 +19,9 @@
 #include "sudoku/sudoku_grid.hpp"
 #include "sudoku/column_iterator.hpp"
 
-#include <algorithm>
+#include <map>
 #include <stdexcept>
+#include <tuple>
 
 namespace sudoku
 {
@@ -57,9 +58,9 @@ namespace sudoku
         return ret;
     }
 
-    /********************
-     * MEMBER ACCESSORS *
-     ********************/
+    /*************************
+     * ITERATORS (size_type) *
+     *************************/
 
     sudoku_grid::const_column_iterator sudoku_grid::get_column_cbegin(
         const size_type __n
@@ -107,28 +108,28 @@ namespace sudoku
         const size_type __n
     ) const
     {
-        return m_grid[__n % 9].cbegin();
+        return m_grid[__n / 9].cbegin();
     }
 
     sudoku_grid::const_row_iterator sudoku_grid::get_row_cend(
         const size_type __n
     ) const
     {
-        return m_grid[__n % 9].cend();
+        return m_grid[__n / 9].cend();
     }
 
     sudoku_grid::row_iterator sudoku_grid::get_row_begin(
         const size_type __n
     )
     {
-        return m_grid[__n % 9].begin();
+        return m_grid[__n / 9].begin();
     }
 
     sudoku_grid::row_iterator sudoku_grid::get_row_end(
         const size_type __n
     )
     {
-        return m_grid[__n % 9].end();
+        return m_grid[__n / 9].end();
     }
 
     sudoku_grid::const_row_iterator sudoku_grid::get_row_begin(
@@ -197,6 +198,9 @@ namespace sudoku
         return get_square_cend(__n);
     }
 
+    /**********************************
+     * ITERATORS (const_row_iterator) *
+     **********************************/
 
     sudoku_grid::const_column_iterator sudoku_grid::get_column_cbegin(
         const const_row_iterator __i
@@ -323,53 +327,9 @@ namespace sudoku
         return get_square_end(__i - m_grid.front().cbegin());
     }
 
-    bool sudoku_grid::is_in_column(
-        const cell_type __c,
-        const size_type __i
-    ) const
-    {
-        if (__c > 9) {
-            return false;
-        } else {
-            return std::find(
-                get_column_cbegin(__i),
-                get_column_cend(__i),
-                __c
-            ) != get_column_cend(__i);
-        }
-    }
-
-    bool sudoku_grid::is_in_row(
-        const cell_type __c,
-        const size_type __i
-    ) const
-    {
-        if (__c > 9) {
-            return false;
-        } else {
-            return std::find(
-                get_row_cbegin(__i),
-                get_row_cend(__i),
-                __c
-            ) != get_row_cend(__i);
-        }
-    }
-
-    bool sudoku_grid::is_in_square(
-        const cell_type __c,
-        const size_type __i
-    ) const
-    {
-        if (__c > 9) {
-            return false;
-        } else {
-            return std::find(
-                get_square_cbegin(__i),
-                get_square_cend(__i),
-                __c
-            ) != get_square_cend(__i);
-        }
-    }
+    /*********
+     * TESTS *
+     *********/
 
     bool sudoku_grid::is_empty() const
     {
@@ -384,7 +344,7 @@ namespace sudoku
         return true;
     }
 
-    bool sudoku_grid::is_valid() const
+    bool sudoku_grid::is_finished() const
     {
         for (cell_type i = 1; i != 10; ++i) {
             for (size_type k = 0; k != 9; ++k) {
@@ -404,6 +364,10 @@ namespace sudoku
 
         return true;
     }
+
+    /***********************
+     * GETTERS AND SETTERS *
+     ***********************/
 
     std::vector<sudoku_grid::row_iterator> sudoku_grid::get_empty_cells()
     {
@@ -449,5 +413,94 @@ namespace sudoku
         }
 
         return ret;
+    }
+
+    /**********
+     * SOLVER *
+     **********/
+
+    void sudoku_grid::solve()
+    {
+        using cells_type                = std::vector<cell_type>;
+        using cells_type_const_iterator = cells_type::const_iterator;
+        using allowed_values_type       = std::map<row_iterator, cells_type>;
+
+        using selected_cells_type =
+            std::vector<
+                std::tuple<
+                    row_iterator,
+                    cells_type_const_iterator,
+                    cells_type_const_iterator,
+                    cells_type_const_iterator
+                >
+            >;
+
+        auto tmp = *this;
+
+        allowed_values_type allowed_values;
+
+        for (auto i : tmp.get_empty_cells()) {
+            for (cell_type c = 1; c != 10; ++c) {
+                if (
+                    !tmp.is_in_column(c, i) &&
+                    !tmp.is_in_row(c, i) &&
+                    !tmp.is_in_square(c, i)
+                )
+                {
+                    allowed_values[i].push_back(c);
+                }
+            }
+        }
+
+        selected_cells_type selected_cells;
+        selected_cells.reserve(allowed_values.size());
+
+        for (
+            auto i = allowed_values.cbegin();
+            i != allowed_values.cend();
+            ++i
+        )
+        {
+            selected_cells.push_back({
+                i->first,
+                i->second.cbegin(),
+                i->second.cbegin(),
+                i->second.cend()
+            });
+        }
+
+        for (auto i = selected_cells.begin(); i != selected_cells.end(); ) {
+            auto& [grid_it, allowed_it, allowed_begin, allowed_end] = *i;
+
+            if (
+                (*grid_it == 0) &&
+                !tmp.is_in_column(*allowed_it, grid_it) &&
+                !tmp.is_in_row(*allowed_it, grid_it) &&
+                !tmp.is_in_square(*allowed_it, grid_it)
+            )
+            {
+                *grid_it = *allowed_it;
+
+                ++i;
+            } else {
+                if (++allowed_it == allowed_end) {
+                    if (i == selected_cells.begin()) {
+                        throw std::runtime_error("This sudoku has no solution.");
+                    } else {
+                        allowed_it = allowed_begin;
+
+                        --i;
+                    }
+                }
+
+                *grid_it = 0;
+            }
+        }
+
+        if (!tmp.is_finished()) {
+            throw std::runtime_error("This sudoku has no solution.");
+        }
+
+        *this = std::move(tmp);
     }
 }
