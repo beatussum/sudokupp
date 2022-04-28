@@ -16,6 +16,7 @@
 
 set(
     SUDOKUPP_HPP
+    core.hpp
     sudoku/column_iterator.hpp
     sudoku/square_iterator.hpp
     sudoku/sudoku_grid.hpp
@@ -33,6 +34,11 @@ set(
     main.cpp
     sudoku/sudoku_grid.cpp
 )
+
+if (WITH_OPTIMISED_ALGORITHM)
+    list(APPEND SUDOKUPP_HPP sudoku/selected_cells_comparator.hpp)
+    list(APPEND SUDOKUPP_IPP sudoku/selected_cells_comparator.ipp)
+endif()
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)

@@ -17,11 +17,19 @@
 
 
 #include "sudoku/sudoku_grid.hpp"
-#include "sudoku/column_iterator.hpp"
+#include "core.hpp"
 
 #include <map>
-#include <stdexcept>
-#include <tuple>
+
+#ifdef SUDOKUPP_OPTIMISED_ALGORITHM
+    #include "sudoku/selected_cells_comparator.hpp"
+
+    #include <set>
+
+    #define solver_const_cast(__v) smart_const_cast(__v)
+#else
+    #define solver_const_cast(__v) __v
+#endif
 
 namespace sudoku
 {
@@ -425,15 +433,19 @@ namespace sudoku
         using cells_type_const_iterator = cells_type::const_iterator;
         using allowed_values_type       = std::map<row_iterator, cells_type>;
 
+        using selected_cell_type = std::tuple<
+            row_iterator,
+            cells_type_const_iterator,
+            cells_type_const_iterator,
+            cells_type_const_iterator
+        >;
+
+#ifdef SUDOKUPP_OPTIMISED_ALGORITHM
         using selected_cells_type =
-            std::vector<
-                std::tuple<
-                    row_iterator,
-                    cells_type_const_iterator,
-                    cells_type_const_iterator,
-                    cells_type_const_iterator
-                >
-            >;
+            std::multiset<selected_cell_type, selected_cells_comparator>;
+#else
+        using selected_cells_type = std::vector<selected_cell_type>;
+#endif
 
         auto tmp = *this;
 
@@ -453,7 +465,10 @@ namespace sudoku
         }
 
         selected_cells_type selected_cells;
+
+#ifndef SUDOKUPP_OPTIMISED_ALGORITHM
         selected_cells.reserve(allowed_values.size());
+#endif
 
         for (
             auto i = allowed_values.cbegin();
@@ -461,16 +476,28 @@ namespace sudoku
             ++i
         )
         {
+#ifdef SUDOKUPP_OPTIMISED_ALGORITHM
+            selected_cells.insert({
+                i->first,
+                i->second.cbegin(),
+                i->second.cbegin(),
+                i->second.cend()
+            });
+#else
             selected_cells.push_back({
                 i->first,
                 i->second.cbegin(),
                 i->second.cbegin(),
                 i->second.cend()
             });
+#endif
         }
 
         for (auto i = selected_cells.begin(); i != selected_cells.end(); ) {
-            auto& [grid_it, allowed_it, allowed_begin, allowed_end] = *i;
+            auto grid_it       = std::get<0>(*i);
+            auto& allowed_it   = std::get<1>(*i);
+            auto allowed_begin = std::get<2>(*i);
+            auto allowed_end   = std::get<3>(*i);
 
             if (
                 (*grid_it == 0) &&
@@ -483,11 +510,13 @@ namespace sudoku
 
                 ++i;
             } else {
-                if (++allowed_it == allowed_end) {
+                if (++solver_const_cast(allowed_it) == allowed_end) {
                     if (i == selected_cells.begin()) {
-                        throw std::runtime_error("This sudoku has no solution.");
+                        throw std::runtime_error(
+                            "This sudoku has no solution."
+                        );
                     } else {
-                        allowed_it = allowed_begin;
+                        solver_const_cast(allowed_it) = allowed_begin;
 
                         --i;
                     }

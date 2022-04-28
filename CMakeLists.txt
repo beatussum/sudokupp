@@ -25,6 +25,12 @@ project(sudokupp
 
 option(WITH_DOC "Build the documentation" OFF)
 
+option(
+    WITH_OPTIMISED_ALGORITHM
+    "Use an optimised algorithm to solve the sudoku grid"
+    ON
+)
+
 unset(CMAKE_CXX_FLAGS_RELEASE CACHE)
 macro(add_gcc_cxx_flags _flags)
     if(CMAKE_COMPILER_IS_GNUCXX)
@@ -73,6 +79,10 @@ macro(add_to_doc _headers)
         )
     endif()
 endmacro()
+
+if (WITH_OPTIMISED_ALGORITHM)
+    add_compile_definitions(SUDOKUPP_OPTIMISED_ALGORITHM)
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
